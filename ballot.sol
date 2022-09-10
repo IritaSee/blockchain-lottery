@@ -25,10 +25,26 @@ contract Lottery{
         
     }
 
-    function pickWinner() public {
+    function pickWinner() public restricted {
+        //manager require function:
+         // require(msg.sender == manager); // we have the restricted thing
+        
         // random() mod players.length = winner
         uint winnerIndex = random() % players.length;
         // send winner some money
         players[winnerIndex].transfer(this.balance);
+        //reset contract -> empty list of players, get ready for next round
+        players = new address[](0);
+
     }
+
+    function getPlayers() public view returns (address[]) {
+        return players;
+    }
+
+
+   modifier restricted() {
+    require(msg.sender == manager);
+    _; // means plug-able to the main code, will plugged before the actual function
+   }
 }
